@@ -15,6 +15,7 @@ export function useEditorActions() {
     setSelectedElements,
     removeElementFromTrack,
     splitElement,
+    separateAudio,
     addElementToTrack,
     snappingEnabled,
     toggleSnapping,
@@ -144,6 +145,20 @@ export function useEditorActions() {
         startTime: newStartTime,
       });
     }
+  });
+
+  useActionHandler("separate-audio", () => {
+    if (selectedElements.length !== 1) {
+      toast.error("Select exactly one media element to separate audio");
+      return;
+    }
+    const { trackId, elementId } = selectedElements[0];
+    const track = tracks.find((t) => t.id === trackId);
+    if (!track || track.type !== "media") {
+      toast.error("Select a media element to separate audio");
+      return;
+    }
+    separateAudio(trackId, elementId);
   });
 
   useActionHandler("toggle-snapping", () => {

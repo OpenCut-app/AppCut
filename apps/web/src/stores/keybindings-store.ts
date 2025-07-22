@@ -22,6 +22,7 @@ export const defaultKeybindings: KeybindingConfig = {
   n: "toggle-snapping",
   "ctrl+a": "select-all",
   "ctrl+d": "duplicate-selected",
+  "ctrl+shift+d": "separate-audio",
   "ctrl+z": "undo",
   "ctrl+shift+z": "redo",
   "ctrl+y": "redo",
