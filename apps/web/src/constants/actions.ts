@@ -43,6 +43,7 @@ export type Action =
   | "delete-selected" // Delete selected elements
   | "select-all" // Select all elements
   | "duplicate-selected" // Duplicate selected element
+  | "separate-audio" // Separate audio from video
   | "toggle-snapping" // Toggle snapping
   | "undo" // Undo last action
   | "redo"; // Redo last undone action

@@ -55,6 +55,10 @@ const actionDescriptions: Record<
     description: "Delete selected elements",
     category: "Editing",
   },
+  "separate-audio":{
+    description: "Separate audio from video",
+    category: "Editing",
+  },
   "select-all": { description: "Select all elements", category: "Selection" },
   "duplicate-selected": {
     description: "Duplicate selected element",
