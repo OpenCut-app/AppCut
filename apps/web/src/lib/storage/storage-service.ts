@@ -1,14 +1,14 @@
-import { TProject } from "@/types/project";
 import { MediaItem } from "@/stores/media-store";
+import { TProject } from "@/types/project";
+import { TimelineTrack } from "@/types/timeline";
 import { IndexedDBAdapter } from "./indexeddb-adapter";
 import { OPFSAdapter } from "./opfs-adapter";
 import {
   MediaFileData,
-  StorageConfig,
   SerializedProject,
+  StorageConfig,
   TimelineData,
 } from "./types";
-import { TimelineTrack } from "@/types/timeline";
 
 class StorageService {
   private projectsAdapter: IndexedDBAdapter<SerializedProject>;
@@ -116,6 +116,15 @@ class StorageService {
     const { mediaMetadataAdapter, mediaFilesAdapter } =
       this.getProjectMediaAdapters(projectId);
 
+    // hash the file to check for duplicates
+    const hash = await this.getFileHash(mediaItem.file);
+    const existingFile = await this.checkFileExists(projectId, hash);
+    if (existingFile) {
+      throw new Error(
+        `This file has already been added to the project as "${existingFile.name}".`
+      );
+    }
+
     // Save file to project-specific OPFS
     await mediaFilesAdapter.set(mediaItem.id, mediaItem.file);
 
@@ -129,6 +138,7 @@ class StorageService {
       width: mediaItem.width,
       height: mediaItem.height,
       duration: mediaItem.duration,
+      hash,
     };
 
     await mediaMetadataAdapter.set(mediaItem.id, metadata);
@@ -275,6 +285,34 @@ class StorageService {
 
   isFullySupported(): boolean {
     return this.isIndexedDBSupported() && this.isOPFSSupported();
+  }
+
+  async getFileHash(file: File): Promise<string> {
+    const arrayBuffer = await file.arrayBuffer();
+    const hashBuffer = await crypto.subtle.digest("SHA-256", arrayBuffer);
+    return Array.from(new Uint8Array(hashBuffer))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+  }
+
+  /**
+   * Check if a file with the same hash already exists in the project.
+   * @returns `MediaFileData` if a file with the same hash exists, otherwise null.
+   */
+  async checkFileExists(
+    projectId: string,
+    hash: string
+  ): Promise<MediaFileData | null> {
+    const { mediaMetadataAdapter } = this.getProjectMediaAdapters(projectId);
+    // Check if a file with the same hash already exists
+    const mediaIds = await mediaMetadataAdapter.list();
+    for (const id of mediaIds) {
+      const metadata = await mediaMetadataAdapter.get(id);
+      if (metadata && metadata.hash === hash) {
+        return metadata;
+      }
+    }
+    return null;
   }
 }
 

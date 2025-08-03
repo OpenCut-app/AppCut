@@ -97,7 +97,11 @@ export function MediaView() {
       );
       // Add each processed media item to the store
       for (const item of processedItems) {
-        await addMediaItem(activeProject.id, item);
+        try {
+          await addMediaItem(activeProject.id, item);
+        } catch (error: any) {
+          toast.error(`Failed to process file ${item.name}`, { description: error.message });
+        }
       }
     } catch (error) {
       // Show error toast if processing fails

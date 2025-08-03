@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { storageService } from "@/lib/storage/storage-service";
-import { useTimelineStore } from "./timeline-store";
 import { generateUUID } from "@/lib/utils";
+import { useTimelineStore } from "./timeline-store";
 
 export type MediaType = "image" | "video" | "audio";
 
@@ -180,6 +180,8 @@ export const useMediaStore = create<MediaStore>((set, get) => ({
       set((state) => ({
         mediaItems: state.mediaItems.filter((media) => media.id !== newItem.id),
       }));
+      // throw error so UI can handle
+      throw error;
     }
   },
 

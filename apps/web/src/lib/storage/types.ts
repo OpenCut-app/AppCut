@@ -18,6 +18,7 @@ export interface MediaFileData {
   width?: number;
   height?: number;
   duration?: number;
+  hash?: string;
   // File will be stored separately in OPFS
 }
 
