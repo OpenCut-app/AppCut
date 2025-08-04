@@ -50,7 +50,7 @@ export function Handlebars({ children }: HandlebarsProps) {
       <div ref={containerRef} className="relative -rotate-[2.76deg] mt-0.5">
         <div className="absolute inset-0 w-full h-full rounded-2xl border border-yellow-500 flex justify-between z-1">
           <motion.div
-            className="absolute z-10 left-0 h-full border border-yellow-500 w-7 rounded-full bg-accent flex items-center justify-center select-none"
+            className="absolute z-10 left-0 h-full border border-yellow-500 w-7 rounded-full bg-background flex items-center justify-center select-none"
             style={{
               x: leftHandleX,
             }}
@@ -66,7 +66,7 @@ export function Handlebars({ children }: HandlebarsProps) {
           </motion.div>
 
           <motion.div
-            className="absolute z-10 -left-[30px] h-full border border-yellow-500 w-7 rounded-full bg-accent flex items-center justify-center select-none"
+            className="absolute z-10 -left-[30px] h-full border border-yellow-500 w-7 rounded-full bg-background flex items-center justify-center select-none"
             style={{
               x: rightHandleX,
             }}

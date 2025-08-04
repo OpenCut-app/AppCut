@@ -27,4 +27,7 @@ export const patternCraftGradients = [
 
   // Purple Glow Left
   "radial-gradient(circle at top left, rgba(173, 109, 244, 0.5), transparent 70%)",
+
+  // Pastel Wave
+  "linear-gradient(120deg, #d5c5ff 0%, #a7f3d0 50%, #f0f0f0 100%)",
 ];
