@@ -446,11 +446,7 @@ function ProjectCard({
                 <Button
                   variant="text"
                   size="sm"
-                  className={`size-6 p-0 transition-all shrink-0 ml-2 ${
-                    isDropdownOpen
-                      ? "opacity-100"
-                      : "opacity-0 group-hover:opacity-100"
-                  }`}
+                  className={`size-6 p-0 transition-all shrink-0 ml-2`}
                   onClick={(e) => e.preventDefault()}
                 >
                   <MoreHorizontal />
