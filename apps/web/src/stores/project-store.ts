@@ -163,6 +163,9 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
       await storageService.saveProject(newProject);
       // Reload all projects to update the list
       await get().loadAllProjects();
+      
+      // Load the newly created project into the editor (media, timeline, layers, etc.)
+      await get().loadProject(newProject.id);
       return newProject.id;
     } catch (error) {
       toast.error("Failed to save new project");
