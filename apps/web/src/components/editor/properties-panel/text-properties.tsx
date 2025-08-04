@@ -6,7 +6,8 @@ import { useTimelineStore } from "@/stores/timeline-store";
 import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { Switch } from "@/components/ui/switch"; // Add Switch import
+import { useState, useRef } from "react";
 import {
   PropertyItem,
   PropertyItemLabel,
@@ -29,6 +30,9 @@ export function TextProperties({
   const [opacityInput, setOpacityInput] = useState(
     Math.round(element.opacity * 100).toString()
   );
+
+  // Track the last selected color for toggling
+  const lastSelectedColor = useRef("#000000");
 
   const parseAndValidateNumber = (
     value: string,
@@ -84,6 +88,20 @@ export function TextProperties({
     );
     setOpacityInput(opacityPercent.toString());
     updateTextElement(trackId, element.id, { opacity: opacityPercent / 100 });
+  };
+
+  // Update last selected color when a new color is picked
+  const handleColorChange = (color: string) => {
+    if (color !== "transparent") {
+      lastSelectedColor.current = color;
+    }
+    updateTextElement(trackId, element.id, { backgroundColor: color });
+  };
+
+  // Toggle between transparent and last selected color
+  const handleTransparentToggle = (isTransparent: boolean) => {
+    const newColor = isTransparent ? "transparent" : lastSelectedColor.current;
+    updateTextElement(trackId, element.id, { backgroundColor: newColor });
   };
 
   return (
@@ -220,21 +238,31 @@ export function TextProperties({
           />
         </PropertyItemValue>
       </PropertyItem>
-      <PropertyItem direction="row">
-        <PropertyItemLabel>Background</PropertyItemLabel>
+      <PropertyItem direction="column">
+        <div className="flex items-center justify-between">
+          <PropertyItemLabel>Background</PropertyItemLabel>
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="transparent-bg-toggle"
+              checked={element.backgroundColor === "transparent"}
+              onCheckedChange={handleTransparentToggle}
+            />
+            <label htmlFor="transparent-bg-toggle" className="text-sm font-medium">
+              Transparent
+            </label>
+          </div>
+        </div>
         <PropertyItemValue>
           <Input
             type="color"
             value={
               element.backgroundColor === "transparent"
-                ? "#000000"
+                ? lastSelectedColor.current
                 : element.backgroundColor || "#000000"
             }
-            onChange={(e) => {
-              const backgroundColor = e.target.value;
-              updateTextElement(trackId, element.id, { backgroundColor });
-            }}
+            onChange={(e) => handleColorChange(e.target.value)}
             className="w-full cursor-pointer rounded-full"
+            disabled={element.backgroundColor === "transparent"}
           />
         </PropertyItemValue>
       </PropertyItem>
