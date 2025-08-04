@@ -3,7 +3,7 @@ import { storageService } from "@/lib/storage/storage-service";
 import { useTimelineStore } from "./timeline-store";
 import { generateUUID } from "@/lib/utils";
 
-export type MediaType = "image" | "video" | "audio";
+export type MediaType = "image" | "video" | "audio" | "GIF";
 
 export interface MediaItem {
   id: string;
@@ -44,15 +44,18 @@ interface MediaStore {
 export const getFileType = (file: File): MediaType | null => {
   const { type } = file;
 
-  if (type.startsWith("image/")) {
-    return "image";
-  }
-  if (type.startsWith("video/")) {
-    return "video";
-  }
-  if (type.startsWith("audio/")) {
-    return "audio";
-  }
+  if (type.startsWith("image/gif")) {
+		return "GIF";
+	}
+	if (type.startsWith("image/")) {
+		return "image";
+	}
+	if (type.startsWith("video/")) {
+		return "video";
+	}
+	if (type.startsWith("audio/")) {
+		return "audio";
+	}
 
   return null;
 };
@@ -62,6 +65,12 @@ export const getImageDimensions = (
   file: File
 ): Promise<{ width: number; height: number }> => {
   return new Promise((resolve, reject) => {
+    // check if the file is an image
+    if (!file.type.startsWith("image/")) {
+      reject(new Error("The media needs to be an image to extract its dimensions"))
+      return;
+    }
+
     const img = new window.Image();
 
     img.addEventListener("load", () => {
@@ -84,11 +93,21 @@ export const getImageDimensions = (
 export const generateVideoThumbnail = (
   file: File
 ): Promise<{ thumbnailUrl: string; width: number; height: number }> => {
-  return new Promise((resolve, reject) => {
-    const video = document.createElement("video") as HTMLVideoElement;
-    const canvas = document.createElement("canvas") as HTMLCanvasElement;
-    const ctx = canvas.getContext("2d");
+	return new Promise((resolve, reject) => {
+		const video = document.createElement("video") as HTMLVideoElement;
+		const canvas = document.createElement("canvas") as HTMLCanvasElement;
+		const ctx = canvas.getContext("2d");
 
+		if (!file.type.startsWith("video/")) {
+			reject(new Error("The media needs to be a video to generate a thumbnail"))
+			return;
+		
+		}
+
+    if (!ctx) {
+      reject(new Error("Could not get canvas context"));
+      return;
+    }
     if (!ctx) {
       reject(new Error("Could not get canvas context"));
       return;
@@ -236,6 +255,7 @@ export const useMediaStore = create<MediaStore>((set, get) => ({
 
     // 3) Remove from persistent storage
     try {
+      // TODO: remove the media from the timeline if it exists
       await storageService.deleteMediaItem(projectId, id);
     } catch (error) {
       console.error("Failed to delete media item:", error);

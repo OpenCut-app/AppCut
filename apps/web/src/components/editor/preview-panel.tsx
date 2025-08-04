@@ -281,7 +281,7 @@ export function PreviewPanel() {
 
     const blurIntensity = activeProject.blurIntensity || 8;
 
-    if (mediaItem.type === "video") {
+    if (mediaItem.type === "video" || mediaItem.type == "GIF") {
       return (
         <div
           key={`blur-${element.id}`}
@@ -429,7 +429,7 @@ export function PreviewPanel() {
       }
 
       // Image elements
-      if (mediaItem.type === "image") {
+      if (mediaItem.type === "image" || mediaItem.type == "GIF") {
         return (
           <div
             key={element.id}
@@ -444,6 +444,22 @@ export function PreviewPanel() {
           </div>
         );
       }
+			// Image elements
+			if (mediaItem.type === "image" || mediaItem.type == "GIF") {
+				return (
+					<div
+						key={element.id}
+						className="absolute inset-0 flex items-center justify-center"
+					>
+						<img
+							src={mediaItem.url!}
+							alt={mediaItem.name}
+							className="max-w-full max-h-full object-contain"
+							draggable={false}
+						/>
+					</div>
+				);
+			}
 
       // Audio elements (no visual representation)
       if (mediaItem.type === "audio") {
@@ -489,7 +505,7 @@ export function PreviewPanel() {
               {renderBlurBackground()}
               {activeElements.length === 0 ? (
                 <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
-                  No elements at current time
+                  No media playing at current time
                 </div>
               ) : (
                 activeElements.map((elementData, index) =>

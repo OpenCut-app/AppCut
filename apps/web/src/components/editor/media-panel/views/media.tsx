@@ -193,8 +193,20 @@ export function MediaView() {
     setFilteredMediaItems(filtered);
   }, [mediaItems, mediaFilter, searchQuery, sortBy, sortOrder]);
 
-  const previewComponents = useMemo(() => {
-    const previews = new Map<string, React.ReactNode>();
+  const renderPreview = (item: MediaItem) => {
+    // Render a preview for each media type (image, video, audio, unknown)
+    if (item.type === "image" || item.type == "GIF") {
+      return (
+        <div className="w-full h-full flex items-center justify-center">
+          <img
+            src={item.url}
+            alt={item.name}
+            className="max-w-full max-h-full object-contain"
+            loading="lazy"
+          />
+        </div>
+      );
+    }
 
     filteredMediaItems.forEach((item) => {
       let preview: React.ReactNode;
