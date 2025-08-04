@@ -38,7 +38,7 @@ export function Header() {
   );
 
   return (
-    <div className="mx-4 md:mx-0">
+    <div className="sticky top-0 z-50 mx-4 md:mx-0">
       <HeaderBase
         className="bg-accent border rounded-2xl max-w-3xl mx-auto mt-4 pl-4 pr-[14px]"
         leftContent={leftContent}
