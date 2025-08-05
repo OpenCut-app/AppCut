@@ -108,7 +108,7 @@ export function Timeline() {
   // Dynamic timeline width calculation based on playhead position and duration
   const dynamicTimelineWidth = Math.max(
     (duration || 0) * TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel, // Base width from duration
-    (currentTime + 30) * TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel, // Width to show current time + 30 seconds buffer
+    (currentTime + Math.max(60, duration * 0.1)) * TIMELINE_CONSTANTS.PIXELS_PER_SECOND * zoomLevel, // Dynamic buffer: 60s minimum or 10% of duration
     timelineRef.current?.clientWidth || 1000 // Minimum width
   );
 
