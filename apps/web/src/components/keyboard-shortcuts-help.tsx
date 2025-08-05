@@ -199,8 +199,8 @@ export const KeyboardShortcutsHelp = () => {
           Shortcuts
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[80vh] flex flex-col p-0">
+        <DialogHeader className="flex-shrink-0 p-6 pb-4">
           <DialogTitle className="flex items-center gap-2">
             <Keyboard className="w-5 h-5" />
             Keyboard Shortcuts
@@ -211,33 +211,34 @@ export const KeyboardShortcutsHelp = () => {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6">
-          {categories.map((category) => (
-            <div key={category} className="flex flex-col gap-1">
-              <h3 className="text-xs text-muted-foreground uppercase tracking-wide font-medium">
-                {category}
-              </h3>
-              <div className="space-y-0.5">
-                {shortcuts
-                  .filter((shortcut) => shortcut.category === category)
-                  .map((shortcut) => (
-                    <ShortcutItem
-                      key={shortcut.action}
-                      shortcut={shortcut}
-                      isRecording={
-                        shortcut.action === recordingShortcut?.action
-                      }
-                      onStartRecording={handleStartRecording}
-                    />
-                  ))}
+        <div className="overflow-y-auto flex-grow scrollbar-thin">
+          <div className="space-y-6 p-6">
+            {categories.map((category) => (
+              <div key={category} className="flex flex-col gap-1">
+                <h3 className="text-xs text-muted-foreground uppercase tracking-wide font-medium">
+                  {category}
+                </h3>
+                <div className="space-y-0.5">
+                  {shortcuts
+                    .filter((shortcut) => shortcut.category === category)
+                    .map((shortcut) => (
+                      <ShortcutItem
+                        key={shortcut.action}
+                        shortcut={shortcut}
+                        isRecording={
+                          shortcut.action === recordingShortcut?.action
+                        }
+                        onStartRecording={handleStartRecording}
+                      />
+                    ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-        <DialogFooter>
+        <DialogFooter className="flex-shrink-0 p-6 pt-4">
           <Button
             size="sm"
-            className="mt-4"
             variant="destructive"
             onClick={resetToDefaults}
           >
