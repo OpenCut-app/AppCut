@@ -50,6 +50,9 @@ services:
     build:
       context: .
       dockerfile: ./apps/web/Dockerfile
+      args:
+        - FREESOUND_CLIENT_ID=${FREESOUND_CLIENT_ID}
+        - FREESOUND_API_KEY=${FREESOUND_API_KEY}
     restart: unless-stopped
     ports:
       - "3100:3000" # app is running on 3000 so we run this at 3100
@@ -60,6 +63,8 @@ services:
       - BETTER_AUTH_SECRET=your-production-secret-key-here
       - UPSTASH_REDIS_REST_URL=http://serverless-redis-http:80
       - UPSTASH_REDIS_REST_TOKEN=example_token
+      - FREESOUND_CLIENT_ID=${FREESOUND_CLIENT_ID}
+      - FREESOUND_API_KEY=${FREESOUND_API_KEY}
     depends_on:
       db:
         condition: service_healthy
