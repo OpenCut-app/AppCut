@@ -77,6 +77,7 @@ const formatKey = (key: string): string => {
     .replace("down", "↓")
     .replace("space", "Space")
     .replace("home", "Home")
+    .replace("enter", "Enter") // Format Enter key for display in help dialog
     .replace("end", "End")
     .replace("delete", "Delete")
     .replace("backspace", "Backspace")

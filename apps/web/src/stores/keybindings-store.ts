@@ -17,6 +17,7 @@ export const defaultKeybindings: KeybindingConfig = {
   "shift+left": "jump-backward",
   "shift+right": "jump-forward",
   home: "goto-start",
+  enter: "goto-start", // More intuitive alternative to Home key for timeline navigation
   end: "goto-end",
   s: "split-element",
   n: "toggle-snapping",
