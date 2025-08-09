@@ -1,9 +1,11 @@
 // Time-related utility functions
 
+type TimeCode = "MM:SS" | "HH:MM:SS" | "HH:MM:SS:CS" | "HH:MM:SS:FF";
+
 // Helper function to format time in various formats (MM:SS, HH:MM:SS, HH:MM:SS:CS, HH:MM:SS:FF)
 export const formatTimeCode = (
   timeInSeconds: number,
-  format: "MM:SS" | "HH:MM:SS" | "HH:MM:SS:CS" | "HH:MM:SS:FF" = "HH:MM:SS:CS",
+  format: TimeCode = "HH:MM:SS:CS",
   fps = 30
 ): string => {
   const hours = Math.floor(timeInSeconds / 3600);
@@ -26,7 +28,7 @@ export const formatTimeCode = (
 
 export const parseTimeCode = (
   timeCode: string,
-  format: "MM:SS" | "HH:MM:SS" | "HH:MM:SS:CS" | "HH:MM:SS:FF" = "HH:MM:SS:CS",
+  format: TimeCode = "HH:MM:SS:CS",
   fps = 30
 ): number | null => {
   if (!timeCode || typeof timeCode !== "string") return null;
@@ -113,6 +115,21 @@ export const parseTimeCode = (
   } catch {
     return null;
   }
+
+  return null;
+};
+
+export const guessTimeCodeFormat = (timeCode: string): TimeCode | null => {
+  if (!timeCode || typeof timeCode !== "string") return null;
+
+  const numbers = timeCode.split(":");
+
+  if (!numbers.every((n) => !isNaN(Number(n)))) return null;
+
+  if (numbers.length === 2) return "MM:SS";
+  if (numbers.length === 3) return "HH:MM:SS";
+  // todo: how to tell frames apart from cs?
+  if (numbers.length === 4) return "HH:MM:SS:FF";
 
   return null;
 };
