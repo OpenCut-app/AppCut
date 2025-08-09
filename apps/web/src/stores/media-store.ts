@@ -28,6 +28,7 @@ export interface MediaItem {
 interface MediaStore {
   mediaItems: MediaItem[];
   isLoading: boolean;
+  initialMediaCount: number; // keep track of initial media count for loading state
 
   // Actions - now require projectId
   addMediaItem: (
@@ -159,6 +160,7 @@ export const getMediaAspectRatio = (item: MediaItem): number => {
 export const useMediaStore = create<MediaStore>((set, get) => ({
   mediaItems: [],
   isLoading: false,
+  initialMediaCount: 0,
 
   addMediaItem: async (projectId, item) => {
     const newItem: MediaItem = {
@@ -247,6 +249,7 @@ export const useMediaStore = create<MediaStore>((set, get) => ({
 
     try {
       const mediaItems = await storageService.loadAllMediaItems(projectId);
+      set({ initialMediaCount: mediaItems.length });
 
       // Regenerate thumbnails for video items
       const updatedMediaItems = await Promise.all(

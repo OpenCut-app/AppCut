@@ -33,6 +33,7 @@ import {
 import { DraggableMediaItem } from "@/components/ui/draggable-item";
 import { useProjectStore } from "@/stores/project-store";
 import { useTimelineStore } from "@/stores/timeline-store";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Tooltip,
@@ -41,6 +42,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { usePanelStore } from "@/stores/panel-store";
+import { MediaSkeletons } from "@/components/media-skeletons";
 
 function MediaItemWithContextMenu({
   item,
@@ -68,7 +70,13 @@ function MediaItemWithContextMenu({
 }
 
 export function MediaView() {
-  const { mediaItems, addMediaItem, removeMediaItem } = useMediaStore();
+  const {
+    mediaItems,
+    addMediaItem,
+    removeMediaItem,
+    isLoading,
+    initialMediaCount,
+  } = useMediaStore();
   const { activeProject } = useProjectStore();
   const { mediaViewMode, setMediaViewMode } = usePanelStore();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -145,7 +153,7 @@ export function MediaView() {
   const [filteredMediaItems, setFilteredMediaItems] = useState(mediaItems);
 
   useEffect(() => {
-    let filtered = mediaItems.filter((item) => {
+    const filtered = mediaItems.filter((item) => {
       if (mediaFilter && mediaFilter !== "all" && item.type !== mediaFilter) {
         return false;
       }
@@ -271,6 +279,10 @@ export function MediaView() {
   }, [filteredMediaItems]);
 
   const renderPreview = (item: MediaItem) => previewComponents.get(item.id);
+
+  if (isLoading) {
+    return <MediaSkeletons count={initialMediaCount} view={mediaViewMode} />;
+  }
 
   return (
     <>
