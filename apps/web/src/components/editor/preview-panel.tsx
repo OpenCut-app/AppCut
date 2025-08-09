@@ -223,7 +223,8 @@ export function PreviewPanel() {
   const getActiveElements = (): ActiveElement[] => {
     const activeElements: ActiveElement[] = [];
 
-    tracks.forEach((track) => {
+    // Iterate tracks from bottom to top so topmost track renders last (on top)
+    ;[...tracks].reverse().forEach((track) => {
       track.elements.forEach((element) => {
         if (element.hidden) return;
         const elementStart = element.startTime;
@@ -300,6 +301,7 @@ export function PreviewPanel() {
             trimEnd={element.trimEnd}
             clipDuration={element.duration}
             className="w-full h-full object-cover"
+            trackMuted={true}
           />
         </div>
       );
@@ -423,6 +425,7 @@ export function PreviewPanel() {
               trimStart={element.trimStart}
               trimEnd={element.trimEnd}
               clipDuration={element.duration}
+              trackMuted={elementData.track.muted}
             />
           </div>
         );
@@ -448,7 +451,7 @@ export function PreviewPanel() {
       // Audio elements (no visual representation)
       if (mediaItem.type === "audio") {
         return (
-          <div key={element.id} className="absolute inset-0">
+          <div key={element.id} className="absolute inset-0" style={{ pointerEvents: "none" }}>
             <AudioPlayer
               src={mediaItem.url!}
               clipStartTime={element.startTime}

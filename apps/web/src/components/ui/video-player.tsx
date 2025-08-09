@@ -11,6 +11,7 @@ interface VideoPlayerProps {
   trimStart: number;
   trimEnd: number;
   clipDuration: number;
+  trackMuted?: boolean;
 }
 
 export function VideoPlayer({
@@ -21,6 +22,7 @@ export function VideoPlayer({
   trimStart,
   trimEnd,
   clipDuration,
+  trackMuted = false,
 }: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const { isPlaying, currentTime, volume, speed, muted } = usePlaybackStore();
@@ -109,9 +111,9 @@ export function VideoPlayer({
     if (!video) return;
 
     video.volume = volume;
-    video.muted = muted;
+    video.muted = muted || trackMuted;
     video.playbackRate = speed;
-  }, [volume, speed, muted]);
+  }, [volume, speed, muted, trackMuted]);
 
   return (
     <video
