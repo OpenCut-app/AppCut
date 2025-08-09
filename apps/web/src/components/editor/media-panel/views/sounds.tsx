@@ -32,17 +32,21 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
+import { TTSView } from "./tts";
 
 export function SoundsView() {
   return (
     <div className="h-full flex flex-col">
       <Tabs defaultValue="sound-effects" className="flex flex-col h-full">
-        <div className="px-3 pt-4 pb-0">
-          <TabsList>
-            <TabsTrigger value="sound-effects">Sound effects</TabsTrigger>
-            <TabsTrigger value="songs">Songs</TabsTrigger>
-            <TabsTrigger value="saved">Saved</TabsTrigger>
-          </TabsList>
+        <div className="px-3 pt-4 pb-0 overflow-hidden">
+          <div className="overflow-x-auto scrollbar-none">
+            <TabsList className="w-max">
+              <TabsTrigger value="sound-effects">Sound effects</TabsTrigger>
+              <TabsTrigger value="songs">Songs</TabsTrigger>
+              <TabsTrigger value="tts">TTS</TabsTrigger>
+              <TabsTrigger value="saved">Saved</TabsTrigger>
+            </TabsList>
+          </div>
         </div>
         <Separator className="my-4" />
         <TabsContent
@@ -50,6 +54,12 @@ export function SoundsView() {
           className="p-5 pt-0 mt-0 flex-1 flex flex-col min-h-0"
         >
           <SoundEffectsView />
+        </TabsContent>
+        <TabsContent
+          value="tts"
+          className="pt-0 mt-0 flex-1 flex flex-col min-h-0"
+        >
+          <TTSView />
         </TabsContent>
         <TabsContent
           value="saved"

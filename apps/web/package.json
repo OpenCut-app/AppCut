@@ -41,6 +41,7 @@
     "feed": "^5.1.0",
     "framer-motion": "^11.13.1",
     "input-otp": "^1.4.1",
+    "kokoro-js": "^1.2.1",
     "lucide-react": "^0.468.0",
     "motion": "^12.18.1",
     "next": "^15.4.5",
