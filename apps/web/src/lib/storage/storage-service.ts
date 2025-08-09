@@ -74,6 +74,8 @@ class StorageService {
       blurIntensity: project.blurIntensity,
       bookmarks: project.bookmarks,
       fps: project.fps,
+      canvasSize: project.canvasSize,
+      canvasMode: project.canvasMode,
     };
 
     await this.projectsAdapter.set(project.id, serializedProject);
@@ -96,6 +98,8 @@ class StorageService {
       blurIntensity: serializedProject.blurIntensity,
       bookmarks: serializedProject.bookmarks,
       fps: serializedProject.fps,
+      canvasSize: serializedProject.canvasSize,
+      canvasMode: serializedProject.canvasMode,
     };
   }
 

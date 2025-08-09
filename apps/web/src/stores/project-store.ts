@@ -4,6 +4,7 @@ import { storageService } from "@/lib/storage/storage-service";
 import { toast } from "sonner";
 import { useMediaStore } from "./media-store";
 import { useTimelineStore } from "./timeline-store";
+import { useSpeechToTextStore } from "./speech-to-text-store";
 import { generateUUID } from "@/lib/utils";
 import { CanvasSize, CanvasMode } from "@/types/editor";
 
@@ -186,8 +187,10 @@ export const useProjectStore = create<ProjectStore>((set, get) => ({
     // Clear media and timeline immediately to prevent flickering when switching projects
     const mediaStore = useMediaStore.getState();
     const timelineStore = useTimelineStore.getState();
+    const speechToTextStore = useSpeechToTextStore.getState();
     mediaStore.clearAllMedia();
     timelineStore.clearTimeline();
+    speechToTextStore.resetState();
 
     try {
       const project = await storageService.loadProject(id);
