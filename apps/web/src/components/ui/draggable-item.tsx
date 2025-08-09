@@ -24,6 +24,10 @@ export interface DraggableMediaItemProps {
   showPlusOnDrag?: boolean;
   showLabel?: boolean;
   rounded?: boolean;
+  /**
+   * media item size
+   */
+  size?: number;
   variant?: "card" | "compact";
 }
 
@@ -38,6 +42,7 @@ export function DraggableMediaItem({
   showPlusOnDrag = true,
   showLabel = true,
   rounded = true,
+  size,
   variant = "card",
 }: DraggableMediaItemProps) {
   const [isDragging, setIsDragging] = useState(false);
@@ -88,10 +93,26 @@ export function DraggableMediaItem({
     setIsDragging(false);
   };
 
+  const getMediaTitle = (
+    name: string
+  ): [fileName: string, extension: string] => {
+    const lastDotIndex = name.lastIndexOf(".");
+    if (lastDotIndex > 0 && name.length - lastDotIndex <= 5) {
+      // Split at the last dot if extension is 4 chars or less
+      return [name.substring(0, lastDotIndex), name.substring(lastDotIndex)];
+    }
+    // No extension or very long extension, return full name
+    return [name, ""];
+  };
+
+  const [fileName, extension] = getMediaTitle(name);
   return (
     <>
       {variant === "card" ? (
-        <div ref={dragRef} className="relative group w-28 h-28">
+        <div
+          ref={dragRef}
+          className={cn("relative group", size ? "size-full" : "size-28")}
+        >
           <div
             className={`flex flex-col gap-1 p-0 h-auto w-full relative cursor-default ${className}`}
           >
@@ -116,13 +137,12 @@ export function DraggableMediaItem({
             </AspectRatio>
             {showLabel && (
               <span
-                className="text-[0.7rem] text-muted-foreground truncate w-full text-left"
+                className="text-[0.7rem] text-muted-foreground w-full text-left flex"
                 aria-label={name}
                 title={name}
               >
-                {name.length > 8
-                  ? `${name.slice(0, 16)}...${name.slice(-3)}`
-                  : name}
+                <span className="truncate max-w-full">{fileName}</span>
+                {extension && extension}
               </span>
             )}
           </div>
@@ -139,7 +159,7 @@ export function DraggableMediaItem({
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
           >
-            <div className="w-6 h-6 flex-shrink-0 rounded overflow-hidden">
+            <div className="flex-shrink-0 rounded overflow-hidden size-6">
               {preview}
             </div>
             <span className="text-sm truncate flex-1 w-full">{name}</span>

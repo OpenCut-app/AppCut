@@ -13,6 +13,8 @@ import {
   Music,
   Search,
   Video,
+  ZoomIn,
+  ZoomOut,
 } from "lucide-react";
 import { useEffect, useRef, useState, useMemo } from "react";
 import { toast } from "sonner";
@@ -34,6 +36,7 @@ import { DraggableMediaItem } from "@/components/ui/draggable-item";
 import { useProjectStore } from "@/stores/project-store";
 import { useTimelineStore } from "@/stores/timeline-store";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Slider } from "@/components/ui/slider";
 import {
   Tooltip,
   TooltipContent,
@@ -76,6 +79,12 @@ export function MediaView() {
   const [progress, setProgress] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
   const [mediaFilter, setMediaFilter] = useState("all");
+  // Get media size from localStorage or default to 3
+  const [mediaSize, setMediaSize] = useState(() => {
+    const stored = localStorage.getItem("mediaSize");
+    const parsed = parseInt(stored ?? "", 10);
+    return !isNaN(parsed) && parsed >= 1 && parsed <= 5 ? parsed : 3;
+  });
   const [sortBy, setSortBy] = useState<"name" | "type" | "duration" | "size">(
     "name"
   );
@@ -107,6 +116,23 @@ export function MediaView() {
       setIsProcessing(false);
       setProgress(0);
     }
+  };
+
+  const handleMediaSizeChange = (size: number) => {
+    setMediaSize(size);
+    localStorage.setItem("mediaSize", size.toString());
+  };
+
+  const handleSizeIncrease = () => {
+    handleMediaSizeChange(Math.min(5, mediaSize + 1));
+  };
+
+  const handleSizeDecrease = () => {
+    handleMediaSizeChange(Math.max(1, mediaSize - 1));
+  };
+
+  const handleSizeSliderChange = (values: number[]) => {
+    handleMediaSizeChange(values[0]);
   };
 
   const { isDragOver, dragProps } = useDragDrop({
@@ -145,7 +171,7 @@ export function MediaView() {
   const [filteredMediaItems, setFilteredMediaItems] = useState(mediaItems);
 
   useEffect(() => {
-    let filtered = mediaItems.filter((item) => {
+    const filtered = mediaItems.filter((item) => {
       if (mediaFilter && mediaFilter !== "all" && item.type !== mediaFilter) {
         return false;
       }
@@ -306,6 +332,32 @@ export function MediaView() {
               <span>Upload</span>
             </Button>
             <div className="flex items-center gap-0">
+              {mediaViewMode === "grid" && (
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="text"
+                    size="icon"
+                    onClick={handleSizeDecrease}
+                  >
+                    <ZoomOut className="h-4 w-4" />
+                  </Button>
+                  <Slider
+                    className="w-16"
+                    value={[mediaSize]}
+                    onValueChange={handleSizeSliderChange}
+                    min={1}
+                    max={5}
+                    step={1}
+                  />
+                  <Button
+                    variant="text"
+                    size="icon"
+                    onClick={handleSizeIncrease}
+                  >
+                    <ZoomIn className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -446,6 +498,7 @@ export function MediaView() {
               />
             ) : mediaViewMode === "grid" ? (
               <GridView
+                mediaSize={mediaSize}
                 filteredMediaItems={filteredMediaItems}
                 renderPreview={renderPreview}
                 handleRemove={handleRemove}
@@ -469,16 +522,29 @@ function GridView({
   filteredMediaItems,
   renderPreview,
   handleRemove,
+  mediaSize,
 }: {
   filteredMediaItems: MediaItem[];
   renderPreview: (item: MediaItem) => React.ReactNode;
   handleRemove: (e: React.MouseEvent, id: string) => Promise<void>;
+  mediaSize: number;
 }) {
+  // Map size levels (1-5) to appropriate grid item widths
+  const getGridItemWidth = (size: number) => {
+    const sizeMap = {
+      1: 90,
+      2: 120,
+      3: 160,
+      4: 190,
+      5: 220,
+    };
+    return sizeMap[size as keyof typeof sizeMap] || 120;
+  };
   return (
     <div
-      className="grid gap-2"
+      className="grid gap-x-5 gap-y-3"
       style={{
-        gridTemplateColumns: "repeat(auto-fill, 160px)",
+        gridTemplateColumns: `repeat(auto-fill, ${getGridItemWidth(mediaSize)}px)`,
       }}
     >
       {filteredMediaItems.map((item) => (
@@ -488,6 +554,7 @@ function GridView({
           onRemove={handleRemove}
         >
           <DraggableMediaItem
+            size={mediaSize}
             name={item.name}
             preview={renderPreview(item)}
             dragData={{
@@ -522,26 +589,28 @@ function ListView({
   return (
     <div className="space-y-1">
       {filteredMediaItems.map((item) => (
-        <MediaItemWithContextMenu
-          key={item.id}
-          item={item}
-          onRemove={handleRemove}
-        >
-          <DraggableMediaItem
-            name={item.name}
-            preview={renderPreview(item)}
-            dragData={{
-              id: item.id,
-              type: item.type,
-              name: item.name,
-            }}
-            showPlusOnDrag={false}
-            onAddToTimeline={(currentTime) =>
-              useTimelineStore.getState().addMediaAtTime(item, currentTime)
-            }
-            variant="compact"
-          />
-        </MediaItemWithContextMenu>
+        <div>
+          <MediaItemWithContextMenu
+            key={item.id}
+            item={item}
+            onRemove={handleRemove}
+          >
+            <DraggableMediaItem
+              name={item.name}
+              preview={renderPreview(item)}
+              dragData={{
+                id: item.id,
+                type: item.type,
+                name: item.name,
+              }}
+              showPlusOnDrag={false}
+              onAddToTimeline={(currentTime) =>
+                useTimelineStore.getState().addMediaAtTime(item, currentTime)
+              }
+              variant="compact"
+            />
+          </MediaItemWithContextMenu>
+        </div>
       ))}
     </div>
   );
